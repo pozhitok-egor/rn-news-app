@@ -1,21 +1,50 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from "react";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {NavigationContainer} from "@react-navigation/native";
+import HomeScreen from "./src/screens/HomeScreen";
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
+import { Provider } from "./src/context/BlogContext";
+import ShowScreen from "./src/screens/ShowScreen";
+
+const Stack = createNativeStackNavigator();
+
+const customFonts = {
+  "BungeeShade-Regular": require("./assets/fonts/BungeeShade-Regular.ttf"),
+  "BalsamiqSans-Bold": require("./assets/fonts/BalsamiqSans-Bold.ttf"),
+  "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+};
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  if (!fontsLoaded) {
+    return (
+      <AppLoading
+        startAsync={() => Font.loadAsync(customFonts)}
+        onFinish={() => setFontsLoaded(true)}
+        onError={console.warn}
+      />
+    );
+  } else {
+    return (
+      <Provider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{contentStyle: {backgroundColor: "#fff"}}}
+            initialRouteName="Home"
+          >
+            <Stack.Screen
+              options={{headerShown: false}}
+              name="Home"
+              component={HomeScreen}
+            />
+            <Stack.Screen
+              name="Post"
+              component={ShowScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
+    );
+  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
